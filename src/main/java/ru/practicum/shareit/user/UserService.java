@@ -34,4 +34,8 @@ public class UserService {
     public User get(int id) {
         return userStorage.find(id);
     }
+
+    public void delete(int id) {
+        userStorage.delete(id);
+    }
 }

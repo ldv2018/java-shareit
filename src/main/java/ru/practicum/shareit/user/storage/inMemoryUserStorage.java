@@ -3,13 +3,13 @@ package ru.practicum.shareit.user.storage;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
+import ru.practicum.shareit.exception.BadRequestException;
+import ru.practicum.shareit.exception.ConflictException;
 import ru.practicum.shareit.user.model.User;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Repository
@@ -22,9 +22,9 @@ public class inMemoryUserStorage implements UserStorage{
     @Override
     public User add(User user) {
         if (isEmailExist(user)) {
-            throw new RuntimeException();
+            throw new ConflictException(HttpStatus.CONFLICT, "такой email уже существует");
         }
-        user.setId(getId());
+        user.setId(generateId());
         users.put(user.getId(), user);
         log.info("пользователь с id {} добавлен", user.getId());
 
@@ -38,26 +38,51 @@ public class inMemoryUserStorage implements UserStorage{
 
     @Override
     public User update(User user) {
-        if (!users.containsKey(user.getId())) {
-            log.info("нет такого пользователя");
-            throw new RuntimeException();
+        isUserExist(user.getId());
+
+        User updateUser = users.get(user.getId());
+        if (user.getName() != null) {
+            updateUser.setName(user.getName());
         }
-        users.replace(user.getId(), user);
+        if (user.getEmail() != null) {
+            if (isEmailExist(user) && !Objects.equals(user.getEmail(), users.get(user.getId()).getEmail())) {
+                throw new ConflictException(HttpStatus.CONFLICT, "такой email уже существует");
+            }
+            emailsUpdate(user.getId());
+            updateUser.setEmail(user.getEmail());
+        }
+        users.replace(user.getId(), updateUser);
         log.info("пользователь с id {} обновлен", user.getId());
-        return user;
+        return updateUser;
     }
 
     @Override
     public User find(int id) {
-        if (!users.containsKey(id)) {
-            log.info("нет такого пользователя");
-            throw new RuntimeException();
-        }
+        isUserExist(id);
         return users.get(id);
     }
 
-    private int getId() {
-        return id + 1;
+    @Override
+    public void delete(int id) {
+        isUserExist(id);
+        emails.remove(users.get(id).getEmail());
+        users.remove(id);
+        log.info("пользователь {} удален", id);
+    }
+
+    private int generateId() {
+        return ++id;
+    }
+
+    private void isUserExist(int id) {
+        if (!users.containsKey(id)) {
+            log.info("нет такого пользователя");
+            throw new BadRequestException("Пользователь не существует");
+        }
+    }
+
+    private void emailsUpdate(int id) {
+        emails.remove(users.get(id).getEmail());
     }
 
     private boolean isEmailExist(User user) {
