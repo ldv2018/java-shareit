@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.exception.ConflictException;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.*;
@@ -68,6 +69,14 @@ public class inMemoryUserStorage implements UserStorage{
         emails.remove(users.get(id).getEmail());
         users.remove(id);
         log.info("пользователь {} удален", id);
+    }
+
+    @Override
+    public void throwIfUserNotFound(int id) {
+        if (!users.containsKey(id)) {
+            log.info("Пользователь не найден");
+            throw new NotFoundException("Пользователь не найден");
+        }
     }
 
     private int generateId() {

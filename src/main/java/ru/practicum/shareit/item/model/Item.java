@@ -17,7 +17,7 @@ public class Item {
     int id;
     String name;
     String description;
-    Boolean isAvailable;
-    User owner;
+    Boolean available;
+    int owner;
     ItemRequest request;
 }

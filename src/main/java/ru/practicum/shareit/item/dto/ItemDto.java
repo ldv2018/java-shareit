@@ -4,6 +4,10 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
+import ru.practicum.shareit.request.ItemRequest;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 /**
  * TODO Sprint add-controllers.
@@ -13,6 +17,14 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults (level = AccessLevel.PRIVATE)
 public class ItemDto {
     int id;
+    @NotNull
+    @NotBlank
     String name;
-    String email;
+    @NotNull
+    @NotBlank
+    String description;
+    @NotNull
+    Boolean available;
+    int owner;
+    ItemRequest request;
 }

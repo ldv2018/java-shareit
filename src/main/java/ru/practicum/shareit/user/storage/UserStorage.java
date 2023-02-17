@@ -14,4 +14,6 @@ public interface UserStorage {
     User find(int id);
 
     void delete(int id);
+
+    void throwIfUserNotFound(int id);
 }
