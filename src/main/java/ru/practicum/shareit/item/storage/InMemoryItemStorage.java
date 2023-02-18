@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.exception.ConflictException;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.model.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -77,17 +76,22 @@ public class InMemoryItemStorage implements ItemStorage{
     }
 
     @Override
-    public Item findByReview(String review) {
+    public List<Item> findByReview(String review) {
         isItemsNotEmpty();
+        List<Item> findedItems = new ArrayList<>();
+        if (review.isBlank()) {
+            log.info("пустая строка для поиска");
+            return findedItems;
+        }
         for (Map.Entry<Integer, Item> entry : items.entrySet()) {
             String str = entry.getValue().getDescription() + " "
                     + entry.getValue().getName();
-            if (str.contains(review)) {
+            if (str.toLowerCase().contains(review.toLowerCase()) && entry.getValue().getAvailable()) {
                 log.info("вещь найдена по описанию");
-                return entry.getValue();
+                findedItems.add(entry.getValue());
             }
         }
-        return null;
+        return findedItems;
     }
 
     private int generateId() {

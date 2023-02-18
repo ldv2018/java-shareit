@@ -102,5 +102,14 @@ public class ItemController {
     в text передаётся текст для поиска.
     Проверьте, что поиск возвращает только доступные для аренды вещи.
      */
+    @GetMapping("search")
+    @ResponseStatus(HttpStatus.OK)
+    public List<ItemDto> getByReview(@RequestParam(required = false) String text) {
+        List<ItemDto> dto = new ArrayList<>();
+        for (Item item : itemService.findByReview(text)) {
+            dto.add(ItemMapper.toItemDto(item));
+        }
 
+        return dto;
+    }
 }

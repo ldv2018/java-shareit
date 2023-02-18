@@ -44,7 +44,7 @@ public class ItemService {
         return itemStorage.findAllByOwner(id);
     }
 
-    public Item findByReview(String str) {
+    public List<Item> findByReview(String str) {
         return itemStorage.findByReview(str);
     }
 }
