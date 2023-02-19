@@ -36,7 +36,7 @@ public class UserController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<UserDto> get(){
+    public List<UserDto> get() {
         return userService.get()
                 .stream()
                 .map(UserMapper::toDto)

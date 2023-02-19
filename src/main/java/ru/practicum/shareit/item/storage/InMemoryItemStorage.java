@@ -17,7 +17,7 @@ import java.util.Map;
 @Slf4j
 @Repository
 @FieldDefaults (level = AccessLevel.PRIVATE)
-public class InMemoryItemStorage implements ItemStorage{
+public class InMemoryItemStorage implements ItemStorage {
 
     Map<Integer, Item> items = new HashMap<>();
     int id = 0;
@@ -37,15 +37,15 @@ public class InMemoryItemStorage implements ItemStorage{
         if (item.getAvailable() != null) {
             storageItem.setAvailable(item.getAvailable());
             log.info("Обновлен статус вещи {}", itemId);
-        };
+        }
         if (item.getName() != null) {
             storageItem.setName(item.getName());
             log.info("Обновлено имя вещи {}", itemId);
-        };
+        }
         if (item.getDescription() != null) {
             storageItem.setDescription(item.getDescription());
             log.info("Обновлено описание вещи {}", itemId);
-        };
+        }
         items.replace(itemId, storageItem);
         log.info("вещь обновлена в хранилище");
         return storageItem;

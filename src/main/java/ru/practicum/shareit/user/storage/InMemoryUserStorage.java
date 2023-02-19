@@ -15,7 +15,7 @@ import java.util.*;
 @Slf4j
 @Repository
 @FieldDefaults (level = AccessLevel.PRIVATE)
-public class inMemoryUserStorage implements UserStorage{
+public class InMemoryUserStorage implements UserStorage {
     Map<Integer, User> users = new HashMap<>();
     List<String> emails = new ArrayList<>();
     int id = 0;
