@@ -35,15 +35,10 @@ public class ItemController {
         }
         Item item = ItemMapper.toItem(itemDto);
         item.setOwner(userId);
+        Item returnItem = itemService.add(item, userId);
 
-        return ItemMapper.toItemDto(itemService.add(item, userId));
+        return ItemMapper.toItemDto(returnItem);
     }
-
-    /*
-    Редактирование вещи. Эндпойнт PATCH /items/{itemId}.
-    Изменить можно название, описание и статус доступа к аренде.
-    Редактировать вещь может только её владелец.
-     */
 
     @PatchMapping("{itemId}")
     @ResponseStatus(HttpStatus.OK)
@@ -55,14 +50,10 @@ public class ItemController {
         }
         log.info("Запрос на обновление вещи");
         Item item = ItemMapper.toItem(itemDto);
+        Item returnItem = itemService.update(item, itemId, userId);
 
-        return ItemMapper.toItemDto(itemService.update(item, itemId, userId));
+        return ItemMapper.toItemDto(returnItem);
     }
-
-    /*
-    Просмотр информации о конкретной вещи по её идентификатору. Эндпойнт GET /items/{itemId}.
-    Информацию о вещи может просмотреть любой пользователь.
-     */
 
     @GetMapping("{itemId}")
     @ResponseStatus(HttpStatus.OK)
@@ -70,14 +61,10 @@ public class ItemController {
         if (itemId <= 0) {
             throw new BadRequestException("Идентификатор должен быть положительным");
         }
+        Item item = itemService.find(itemId);
 
-        return ItemMapper.toItemDto(itemService.find(itemId));
+        return ItemMapper.toItemDto(item);
     }
-
-    /*
-    Просмотр владельцем списка всех его вещей с указанием названия и описания для каждой.
-    Эндпойнт GET /items.
-     */
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
@@ -93,14 +80,6 @@ public class ItemController {
         return dto;
     }
 
-    /*
-    Поиск вещи потенциальным арендатором.
-    Пользователь передаёт в строке запроса текст, и система ищет вещи,
-    содержащие этот текст в названии или описании.
-    Происходит по эндпойнту /items/search?text={text},
-    в text передаётся текст для поиска.
-    Проверьте, что поиск возвращает только доступные для аренды вещи.
-     */
     @GetMapping("search")
     @ResponseStatus(HttpStatus.OK)
     public List<ItemDto> getByReview(@RequestParam(required = false) String text) {

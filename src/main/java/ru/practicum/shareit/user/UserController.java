@@ -30,8 +30,9 @@ public class UserController {
             throw new BadRequestException("Пустой запрос");
         }
         User user = UserMapper.toUser(userDto);
+        User returnUser = userService.add(user);
 
-        return UserMapper.toDto(userService.add(user));
+        return UserMapper.toDto(returnUser);
     }
 
     @GetMapping
@@ -51,7 +52,9 @@ public class UserController {
         }
         User user = UserMapper.toUser(userDto);
         user.setId(id);
-        return UserMapper.toDto(userService.update(user));
+        User returnUser = userService.update(user);
+
+        return UserMapper.toDto(returnUser);
     }
 
     @GetMapping("{id}")
@@ -60,7 +63,9 @@ public class UserController {
         if (id <= 0) {
             throw new BadRequestException("Неверный запрос");
         }
-        return UserMapper.toDto(userService.get(id));
+        User user = userService.get(id);
+
+        return UserMapper.toDto(user);
     }
 
     @DeleteMapping("{id}")
@@ -71,7 +76,4 @@ public class UserController {
         }
        userService.delete(id);
     }
-
-
-
 }
