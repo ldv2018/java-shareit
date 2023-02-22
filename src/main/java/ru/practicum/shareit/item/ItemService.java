@@ -4,9 +4,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.ConflictException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.implement.Storage;
 import ru.practicum.shareit.item.model.Item;
@@ -61,38 +59,15 @@ public class ItemService {
     }
 
     public List<Item> findAllByUser(int id) {
-        List<Item> items = itemStorage.findAll();
-        List<Item> itemsByOwner = new ArrayList<>();
-        try {
-            for (Item item : items) {
-                if (item.getOwner() == id) {
-                    itemsByOwner.add(item);
-                    log.info("вещь найдена по пользователю");
-                }
-            }
-        } catch (NullPointerException e) {
-            throw new ConflictException(HttpStatus.CONFLICT, "Вещей нет");
-        }
-
-        return itemsByOwner;
+        return itemStorage.findAll(id);
     }
 
     public List<Item> findByReview(String str) {
-        List<Item> items = itemStorage.findAll();
-        List<Item> findedItems = new ArrayList<>();
         if (str.isBlank()) {
-            log.info("пустая строка для поиска");
-            return findedItems;
-        }
-        for (Item item : items) {
-            String searchStr = item.getDescription() + " "
-                    + item.getName();
-            if (searchStr.toLowerCase().contains(str.toLowerCase()) && item.getAvailable()) {
-                log.info("вещь найдена по описанию");
-                findedItems.add(item);
-            }
+            log.info("Пустая строка для поиска");
+            return new ArrayList<>();
         }
 
-        return findedItems;
+        return itemStorage.findAll(str);
     }
 }

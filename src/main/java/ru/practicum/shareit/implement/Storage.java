@@ -8,11 +8,15 @@ public interface Storage<T> {
 
     List<T> findAll();
 
-    List<Integer> findAllId();
-
     T update(T t);
 
     Optional<T> find(int id);
+
+    Optional<T> find(String str);
+
+    List<T> findAll(int id);
+
+    List<T> findAll(String str);
 
     void delete(int id);
 }

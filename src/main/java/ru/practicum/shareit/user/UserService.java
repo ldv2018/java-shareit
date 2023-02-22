@@ -13,7 +13,6 @@ import ru.practicum.shareit.implement.Storage;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
-import java.util.Objects;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Service
@@ -61,11 +60,8 @@ public class UserService {
     }
 
     private void throwIfEmailInUse(User user) {
-        List<User> users = userStorage.findAll();
-        for (User u : users) {
-            if (Objects.equals(u.getEmail(), user.getEmail())) {
-                throw new ConflictException(HttpStatus.CONFLICT, "Такой email уже используется");
-            }
+        if (userStorage.find(user.getEmail()).isPresent()) {
+            throw new ConflictException(HttpStatus.CONFLICT, "Такой email уже используется");
         }
     }
 }

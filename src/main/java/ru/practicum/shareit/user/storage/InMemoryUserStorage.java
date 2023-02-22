@@ -31,11 +31,6 @@ public class InMemoryUserStorage implements Storage<User> {
     }
 
     @Override
-    public List<Integer> findAllId() {
-        return new ArrayList<>(users.keySet());
-    }
-
-    @Override
     public User update(User user) {
         users.replace(user.getId(), user);
         log.info("пользователь с id {} обновлен", user.getId());
@@ -46,6 +41,26 @@ public class InMemoryUserStorage implements Storage<User> {
     @Override
     public Optional<User> find(int id) {
         return Optional.ofNullable(users.get(id));
+    }
+
+    @Override
+    public Optional<User> find(String email) {
+        for (User u : users.values()) {
+            if (u.getEmail().equals(email)) {
+                return Optional.of(u);
+            }
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public List<User> findAll(int id) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<User> findAll(String str) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
