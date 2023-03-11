@@ -29,9 +29,10 @@ public class Booking {
     @Column(name = "end_date")
     LocalDateTime end;
     @Column(name = "item_id")
-    int item;
+    int itemId;
+    @Enumerated(EnumType.STRING)
     Status status;
     @Column(name = "booker_id")
-    int user;
+    int bookerId;
     //String review;
 }

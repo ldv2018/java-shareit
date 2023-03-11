@@ -59,7 +59,7 @@ public class ItemService {
     }
 
     public List<Item> findAllByUser(int id) {
-        return itemStorage.searchByOwner(id);
+        return itemStorage.getAllByOwnerOrderByIdAsc(id);
     }
 
     public List<Item> findByReview(String str) {

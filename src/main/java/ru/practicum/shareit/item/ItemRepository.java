@@ -14,6 +14,5 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
             "and i.available = true")
     List<Item> search(String text);
 
-    @Query( "select i from Item i where i.owner = ?1")
-    List<Item> searchByOwner(int id);
+    List<Item> getAllByOwnerOrderByIdAsc(int ownerId);
 }

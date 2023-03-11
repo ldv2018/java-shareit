@@ -1,5 +1,6 @@
 DROP TABLE IF EXISTS
-    --items,
+    users,
+    items,
     requests,
     bookings
     CASCADE;

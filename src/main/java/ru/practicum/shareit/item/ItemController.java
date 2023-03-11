@@ -6,7 +6,10 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.booking.BookingService;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.exception.BadRequestException;
+import ru.practicum.shareit.item.dto.ItemBookingDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 
@@ -25,6 +28,7 @@ import java.util.List;
 public class ItemController {
 
     final ItemService itemService;
+    final BookingService bookingService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -57,24 +61,40 @@ public class ItemController {
 
     @GetMapping("{itemId}")
     @ResponseStatus(HttpStatus.OK)
-    public ItemDto get(@PathVariable int itemId) {
+    public ItemBookingDto get(@RequestHeader("X-Sharer-User-Id") int userId,
+                              @PathVariable int itemId) {
         if (itemId <= 0) {
             throw new BadRequestException("Идентификатор должен быть положительным");
         }
         Item item = itemService.find(itemId);
+        ItemBookingDto itemBookingDto = ItemMapper.toItemBookingDto(item);
+        if (item.getOwner() == userId) {
+            Booking next = bookingService.getNextBookingByItemId(itemBookingDto.getId(), "APPROVED");
+            Booking last = bookingService.getLastBookingByItemId(itemBookingDto.getId(), "APPROVED");
 
-        return ItemMapper.toItemDto(item);
+            itemBookingDto.setLastBooking(last);
+            itemBookingDto.setNextBooking(next);
+        }
+
+        return itemBookingDto;
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<ItemDto> findAllByOwner(@RequestHeader("X-Sharer-User-Id") int userId) {
+    public List<ItemBookingDto> findAllByOwner(@RequestHeader("X-Sharer-User-Id") int userId) {
         if (userId <= 0) {
             throw new BadRequestException("Идентификатор должен быть положительным");
         }
-        List<ItemDto> dto = new ArrayList<>();
+        List<ItemBookingDto> dto = new ArrayList<>();
         for (Item item : itemService.findAllByUser(userId)) {
-            dto.add(ItemMapper.toItemDto(item));
+            ItemBookingDto itemBookingDto = ItemMapper.toItemBookingDto(item);
+            Booking next = bookingService.getNextBookingByItemId(itemBookingDto.getId(), "APPROVED");
+            Booking last = bookingService.getLastBookingByItemId(itemBookingDto.getId(), "APPROVED");
+
+            itemBookingDto.setLastBooking(last);
+            itemBookingDto.setNextBooking(next);
+
+            dto.add(itemBookingDto);
         }
 
         return dto;
