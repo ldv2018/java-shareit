@@ -1,4 +1,4 @@
-/*package ru.practicum.shareit;
+package ru.practicum.shareit;
 
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -7,4 +7,3 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class ShareItTests {
 }
-*/
