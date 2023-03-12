@@ -17,6 +17,10 @@
 
 	<properties>
 		<java.version>11</java.version>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
+		<mapstruct.version>1.4.2.Final</mapstruct.version>
+		<spring.boot.version>2.6.6</spring.boot.version>
 	</properties>
 
 	<dependencies>
