@@ -115,12 +115,12 @@ public class BookingService {
                         Status.REJECTED);
                 break;
             default:
-                throw new BadRequestException("Unknown state: "+ state);
+                throw new BadRequestException("Unknown state: " + state);
         }
 
         return bookings;
     }
-    
+
     public List<Booking> getAllByOwner(int userId, String state) {
         List<Integer> ownerItems = itemStorage.getAllByOwnerOrderByIdAsc(userId)
                 .stream()
@@ -164,7 +164,7 @@ public class BookingService {
                         Status.REJECTED);
                 break;
             default:
-                throw new BadRequestException("Unknown state: "+ state);
+                throw new BadRequestException("Unknown state: " + state);
         }
 
         return bookings;

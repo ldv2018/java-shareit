@@ -25,11 +25,11 @@ public class BookingController {
     final BookingService bookingService;
     final BookingValidator bookingValidator;
     final BookingMapper bookingMapper;
-    final String USER = "X-Sharer-User-Id";
+    final String user = "X-Sharer-User-Id";
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public BookingResponseDto add(@RequestHeader(USER) int userId,
+    public BookingResponseDto add(@RequestHeader(user) int userId,
                                       @Valid @RequestBody BookingRequestDto bookingRequestDto) {
         if (bookingRequestDto == null) {
             throw new BadRequestException("Пустой запрос");
@@ -43,7 +43,7 @@ public class BookingController {
 
     @PatchMapping("{bookingId}")
     @ResponseStatus(HttpStatus.OK)
-    public BookingResponseDto update(@RequestHeader(USER) int userId,
+    public BookingResponseDto update(@RequestHeader(user) int userId,
                                       @PathVariable int bookingId,
                                       @RequestParam() boolean approved) {
         Booking booking = bookingService.updateStatus(userId, bookingId, approved);
@@ -53,7 +53,7 @@ public class BookingController {
 
     @GetMapping("{bookingId}")
     @ResponseStatus(HttpStatus.OK)
-    public BookingResponseDto get(@RequestHeader(USER) int userId,
+    public BookingResponseDto get(@RequestHeader(user) int userId,
                                   @PathVariable int bookingId) {
         Booking booking = bookingService.get(userId, bookingId);
 
@@ -62,7 +62,7 @@ public class BookingController {
 
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
-    public List<BookingResponseDto> getAll(@RequestHeader(USER) int userId,
+    public List<BookingResponseDto> getAll(@RequestHeader(user) int userId,
                                            @RequestParam(defaultValue = "ALL") String state) {
         List<Booking> bookings = bookingService.getAll(userId, state);
         List<BookingResponseDto> responseDtoList = new ArrayList<>();
@@ -75,7 +75,7 @@ public class BookingController {
 
     @GetMapping("owner")
     @ResponseStatus(HttpStatus.OK)
-    public List<BookingResponseDto> getAllByOwner(@RequestHeader(USER) int userId,
+    public List<BookingResponseDto> getAllByOwner(@RequestHeader(user) int userId,
                                            @RequestParam(defaultValue = "ALL") String state) {
         List<Booking> bookings = bookingService.getAllByOwner(userId, state);
         List<BookingResponseDto> responseDtoList = new ArrayList<>();
