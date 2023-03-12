@@ -11,7 +11,9 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.item.dto.ItemBookingDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.UserService;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -29,6 +31,8 @@ public class ItemController {
 
     final ItemService itemService;
     final BookingService bookingService;
+    final CommentService commentService;
+    final UserService userService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -75,6 +79,11 @@ public class ItemController {
             itemBookingDto.setLastBooking(last);
             itemBookingDto.setNextBooking(next);
         }
+        List<ItemBookingDto.CommentDto> commentsDto = new ArrayList<>();
+        for (Comment c : commentService.findAllByItemId(itemId)) {
+            commentsDto.add(ItemMapper.toCommentDto(c, userService.get(c.getAuthorId())));
+        }
+        itemBookingDto.setComments(commentsDto);
 
         return itemBookingDto;
     }
@@ -109,5 +118,15 @@ public class ItemController {
         }
 
         return dto;
+    }
+
+    @PostMapping("{itemId}/comment")
+    @ResponseStatus(HttpStatus.OK)
+    public ItemBookingDto.CommentDto addComment(@RequestHeader("X-Sharer-User-Id") int userId,
+                                                @PathVariable int itemId,
+                                                @RequestBody @Valid Comment comment) {
+        Comment c = commentService.add(userId, itemId, comment);
+
+        return ItemMapper.toCommentDto(c, userService.get(c.getAuthorId()));
     }
 }

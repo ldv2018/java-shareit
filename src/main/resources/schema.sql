@@ -2,7 +2,8 @@ DROP TABLE IF EXISTS
     users,
     items,
     requests,
-    bookings
+    bookings,
+    comments
     CASCADE;
 
 CREATE TABLE IF NOT EXISTS users (
@@ -36,15 +37,16 @@ CREATE TABLE IF NOT EXISTS bookings (
     end_date timestamp without time zone,
     item_id int,    --item
     booker_id int,  --user
-    status text DEFAULT 'WAITING',
+    status text,
     CONSTRAINT pk_booking PRIMARY KEY (booking_id)
 );
 
 CREATE TABLE IF NOT EXISTS comments (
     comment_id serial,
-    "text" text,
+    description text,
     item_id int,    --item
     author_id int,  --user
+    created timestamp without time zone,
     CONSTRAINT pk_comments PRIMARY KEY (comment_id)
 );
 
@@ -66,12 +68,6 @@ ALTER TABLE items
 
 ALTER TABLE requests
     DROP CONSTRAINT IF EXISTS fk_request_requester;
-
-/*
-ALTER TABLE items
-    ADD CONSTRAINT fk_item_request FOREIGN KEY (request)
-    REFERENCES requests (request_id);
-*/
 
 ALTER TABLE requests
     ADD CONSTRAINT fk_request_requester FOREIGN KEY (requester)

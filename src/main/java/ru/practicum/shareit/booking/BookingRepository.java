@@ -1,13 +1,17 @@
 package ru.practicum.shareit.booking;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.status.Status;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Repository
 public interface BookingRepository extends JpaRepository<Booking, Integer> {
+
+    List<Booking> findByBookerIdAndItemIdAndEndIsBefore(int bookerId, int ItemId, LocalDateTime Date);
 
     List<Booking> findByBookerIdOrderByStartDesc(int bookerId);
 

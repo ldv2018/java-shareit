@@ -15,7 +15,6 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 @Slf4j
-//@Transactional(readOnly = true)
 public class UserService {
     final UserRepository userStorage;
 

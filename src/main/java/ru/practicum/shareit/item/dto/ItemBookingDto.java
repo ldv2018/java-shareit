@@ -8,6 +8,8 @@ import ru.practicum.shareit.booking.model.Booking;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @AllArgsConstructor
 @Data
@@ -24,6 +26,17 @@ public class ItemBookingDto {
     Boolean available;
     Booking lastBooking;
     Booking nextBooking;
+    List<CommentDto> comments;
     int owner;
     int request;
+
+    @Data
+    @AllArgsConstructor
+    @FieldDefaults(level = AccessLevel.PRIVATE)
+    public static class CommentDto {
+        int id;
+        String text;
+        String authorName;
+        LocalDateTime created;
+    }
 }

@@ -34,5 +34,4 @@ public class Booking {
     Status status;
     @Column(name = "booker_id")
     int bookerId;
-    //String review;
 }

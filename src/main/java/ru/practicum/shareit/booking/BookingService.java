@@ -182,6 +182,7 @@ public class BookingService {
             }
             nextBooking = next;
         }
+
         return nextBooking;
     }
 
@@ -196,6 +197,7 @@ public class BookingService {
             }
             lastBooking = last;
         }
+
         return lastBooking;
     }
 
