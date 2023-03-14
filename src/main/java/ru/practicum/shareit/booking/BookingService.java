@@ -18,6 +18,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static ru.practicum.shareit.status.Status.*;
+
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Service
 @AllArgsConstructor
@@ -28,27 +30,21 @@ public class BookingService {
     final UserRepository userStorage;
 
     public Booking add(Booking booking, int userId) {
+        throwIfUserNotExist(userId);
         Item item = itemStorage.findById(booking.getItemId())
                 .orElseThrow(() -> new NotFoundException("Не удалось найти вещь для брони"));
-        User user = userStorage.findById(userId)
-                .orElseThrow(() -> new NotFoundException("Пользователя не существует"));
-        /*
-        Зачем проверять пользователя здесь, если это делает ограничение в БД.
-        Потому что почему то, БД в тесте Booking create failed by wrong userId
-        выкидывая ошибку ограничения, БД добавляет к booking.bookind_id 1. И потом тесты не работают.
-         */
         if (!item.getAvailable()) {
-            throw new BadRequestException("Вещь недоступна для бронирования");
+            throw new BadRequestException("Вещь с id " + item.getId() + " недоступна для бронирования");
         }
         if (item.getOwner() == userId) {
-            throw new NotFoundException("Вещь не может быть забронирована владельцем");
+            throw new NotFoundException("Вещь " + item.getId() + " не может быть забронирована владельцем");
         }
         booking.setBookerId(userId);
-        booking.setStatus(Status.WAITING);
+        booking.setStatus(WAITING);
+        log.info("Бронирование добавлено");
 
         return bookingStorage.save(booking);
     }
-
 
     public Booking updateStatus(int userId, int bookingId, boolean approved) {
         Booking booking = bookingStorage.findById(bookingId)
@@ -56,12 +52,13 @@ public class BookingService {
         Item item = itemStorage.findById(booking.getItemId())
                 .orElseThrow(() -> new NotFoundException("Вещь не найдена"));
         if (item.getOwner() != userId) {
-            throw new NotFoundException("Пользователь не является владельцем");
-        } else if (booking.getStatus() == Status.APPROVED) {
-            throw new BadRequestException("Бронирование уже подтверждено");
+            throw new NotFoundException("Пользователь с id " + userId + " не является владельцем");
+        } else if (booking.getStatus() == APPROVED) {
+            throw new BadRequestException("Бронирование с id " + bookingId + " уже подтверждено");
         } else {
-            booking.setStatus(approved ? Status.APPROVED : Status.REJECTED);
+            booking.setStatus(approved ? APPROVED : REJECTED);
         }
+        log.info("Бронирование обновлено");
 
         return bookingStorage.save(booking);
     }
@@ -72,17 +69,19 @@ public class BookingService {
         Item item = itemStorage.findById(booking.getItemId())
                 .orElseThrow(() -> new NotFoundException("Вещь не найдена"));
         if (item.getOwner() == userId || booking.getBookerId() == userId) {
+            log.info("получено бронирование");
             return booking;
         } else {
-            throw new NotFoundException("у пользователя нет доступа к бронированию");
+            log.warn("доступ пользователя к бронированию запрещен");
+            throw new NotFoundException("у пользователя id = " + userId + " нет доступа к бронированию");
         }
     }
 
     public List<Booking> getAll(int userId, String state) {
         List<Booking> bookings;
         LocalDateTime dateTime = LocalDateTime.now();
-        User user = userStorage.findById(userId)
-                .orElseThrow(() -> new NotFoundException("Пользователя не существует"));
+        throwIfUserNotExist(userId);
+
         switch (state) {
             case "ALL":
                 bookings = bookingStorage.findByBookerIdOrderByStartDesc(userId);
@@ -97,7 +96,7 @@ public class BookingService {
                 bookings = bookingStorage.findByBookerIdAndEndIsBeforeAndStatusEqualsOrderByStartDesc(
                         userId,
                         dateTime,
-                        Status.APPROVED);
+                        APPROVED);
                 break;
             case "FUTURE":
                 bookings = bookingStorage.findByBookerIdAndStartIsAfterOrderByStartDesc(
@@ -107,16 +106,18 @@ public class BookingService {
             case "WAITING":
                 bookings = bookingStorage.findByBookerIdAndStatusEqualsOrderByStartDesc(
                         userId,
-                        Status.WAITING);
+                        WAITING);
                 break;
             case "REJECTED":
                 bookings = bookingStorage.findByBookerIdAndStatusEqualsOrderByStartDesc(
                         userId,
-                        Status.REJECTED);
+                        REJECTED);
                 break;
             default:
+                log.error("запрошен некорректный статус");
                 throw new BadRequestException("Unknown state: " + state);
         }
+        log.info("получен список бронирований");
 
         return bookings;
     }
@@ -129,8 +130,7 @@ public class BookingService {
 
         List<Booking> bookings;
         LocalDateTime dateTime = LocalDateTime.now();
-        User user = userStorage.findById(userId)
-                .orElseThrow(() -> new NotFoundException("Пользователя не существует"));
+        throwIfUserNotExist(userId);
 
         switch (state) {
             case "ALL":
@@ -146,7 +146,7 @@ public class BookingService {
                 bookings = bookingStorage.findByItemIdInAndEndIsBeforeAndStatusEqualsOrderByStartDesc(
                         ownerItems,
                         dateTime,
-                        Status.APPROVED);
+                        APPROVED);
                 break;
             case "FUTURE":
                 bookings = bookingStorage.findByItemIdInAndStartIsAfterOrderByStartDesc(
@@ -156,16 +156,18 @@ public class BookingService {
             case "WAITING":
                 bookings = bookingStorage.findByItemIdInAndStatusEqualsOrderByStartDesc(
                         ownerItems,
-                        Status.WAITING);
+                        WAITING);
                 break;
             case "REJECTED":
                 bookings = bookingStorage.findByItemIdInAndStatusEqualsOrderByStartDesc(
                         ownerItems,
-                        Status.REJECTED);
+                        REJECTED);
                 break;
             default:
+                log.error("запрошен некорректный статус");
                 throw new BadRequestException("Unknown state: " + state);
         }
+        log.info("получен список бронирований");
 
         return bookings;
     }
@@ -182,6 +184,7 @@ public class BookingService {
             }
             nextBooking = next;
         }
+        log.info("получено следующее бронирование");
 
         return nextBooking;
     }
@@ -197,11 +200,17 @@ public class BookingService {
             }
             lastBooking = last;
         }
+        log.info("получено полследнее бронирование");
 
         return lastBooking;
     }
 
     public List<Booking> getByItemId(int itemId, Status status) {
         return bookingStorage.findByItemIdAndStatusEquals(itemId, status);
+    }
+
+    private void throwIfUserNotExist(int id) {
+        User user = userStorage.findById(id)
+                .orElseThrow(() -> new NotFoundException("Пользователя " + id + " не существует"));
     }
 }

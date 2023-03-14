@@ -8,11 +8,10 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.exception.BadRequestException;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * TODO Sprint add-bookings.
@@ -31,9 +30,6 @@ public class BookingController {
     @ResponseStatus(HttpStatus.CREATED)
     public BookingResponseDto add(@RequestHeader(user) int userId,
                                       @Valid @RequestBody BookingRequestDto bookingRequestDto) {
-        if (bookingRequestDto == null) {
-            throw new BadRequestException("Пустой запрос");
-        }
         bookingValidator.check(bookingRequestDto);
         Booking booking = bookingMapper.toBooking(bookingRequestDto);
         Booking returnBooking = bookingService.add(booking, userId);
@@ -65,12 +61,10 @@ public class BookingController {
     public List<BookingResponseDto> getAll(@RequestHeader(user) int userId,
                                            @RequestParam(defaultValue = "ALL") String state) {
         List<Booking> bookings = bookingService.getAll(userId, state);
-        List<BookingResponseDto> responseDtoList = new ArrayList<>();
-        for (Booking b : bookings) {
-            responseDtoList.add(bookingMapper.toBookingResponseDto(b));
-        }
 
-        return responseDtoList;
+        return bookings.stream()
+                .map(bookingMapper::toBookingResponseDto)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("owner")
@@ -78,11 +72,9 @@ public class BookingController {
     public List<BookingResponseDto> getAllByOwner(@RequestHeader(user) int userId,
                                            @RequestParam(defaultValue = "ALL") String state) {
         List<Booking> bookings = bookingService.getAllByOwner(userId, state);
-        List<BookingResponseDto> responseDtoList = new ArrayList<>();
-        for (Booking b : bookings) {
-            responseDtoList.add(bookingMapper.toBookingResponseDto(b));
-        }
 
-        return responseDtoList;
+        return bookings.stream()
+                .map(bookingMapper::toBookingResponseDto)
+                .collect(Collectors.toList());
     }
 }

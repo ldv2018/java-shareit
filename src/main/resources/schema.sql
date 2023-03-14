@@ -7,46 +7,46 @@ DROP TABLE IF EXISTS
     CASCADE;
 
 CREATE TABLE IF NOT EXISTS users (
-    user_id int auto_increment,
-    user_name text,
-    email text,
+    user_id     int     auto_increment,
+    user_name   text,
+    email       text,
     CONSTRAINT pk_user PRIMARY KEY (user_id)
 );
 
 CREATE TABLE IF NOT EXISTS items (
-    item_id int auto_increment,
-    item_name text,
+    item_id     int     auto_increment,
+    item_name   text,
     description text,
-    available boolean,
-    item_owner int, --user
-    request int, --request
+    available   boolean,
+    item_owner  int, --user
+    request     int, --request
     CONSTRAINT pk_item PRIMARY KEY (item_id)
 );
 
 CREATE TABLE IF NOT EXISTS requests (
-    request_id int auto_increment,
+    request_id  int     auto_increment,
     description text,
-    requester int,  --user
-    created date,
+    requester   int,  --user
+    created     date,
     CONSTRAINT pk_request PRIMARY KEY (request_id)
 );
 
 CREATE TABLE IF NOT EXISTS bookings (
-    booking_id int auto_increment,
-    start_date timestamp without time zone,
-    end_date timestamp without time zone,
-    item_id int,    --item
-    booker_id int,  --user
-    status text,
+    booking_id  int     auto_increment,
+    start_date  timestamp without time zone,
+    end_date    timestamp without time zone,
+    item_id     int,    --item
+    booker_id   int,  --user
+    status      varchar(20),
     CONSTRAINT pk_booking PRIMARY KEY (booking_id)
 );
 
 CREATE TABLE IF NOT EXISTS comments (
-    comment_id int auto_increment,
+    comment_id  int     auto_increment,
     description text,
-    item_id int,    --item
-    author_id int,  --user
-    created timestamp without time zone,
+    item_id     int,    --item
+    author_id   int,  --user
+    created     timestamp without time zone,
     CONSTRAINT pk_comments PRIMARY KEY (comment_id)
 );
 

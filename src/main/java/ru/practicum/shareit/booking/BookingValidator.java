@@ -14,6 +14,9 @@ public class BookingValidator implements Validator<BookingRequestDto> {
 
     @Override
     public void check(@Valid BookingRequestDto bookingDto) {
+        if (bookingDto == null) {
+            throw new BadRequestException("Пустой запрос");
+        }
         if (bookingDto.getEnd().isBefore(bookingDto.getStart())) {
             throw new BadRequestException("Время конца бронирования раньше времени начала");
         }
