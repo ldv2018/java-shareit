@@ -6,23 +6,31 @@ import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.status.Status;
 
-import javax.validation.constraints.Future;
-import javax.validation.constraints.FutureOrPresent;
 import java.time.LocalDateTime;
 
-/**
- * TODO Sprint add-bookings.
- */
-@AllArgsConstructor
 @Data
+@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class BookingDto {
+public class BookingResponseDto {
     int id;
-    @FutureOrPresent
     LocalDateTime start;
-    @Future
     LocalDateTime end;
-    int itemId;
+    Item item;
+    User booker;
     Status status;
-    int booker;
+
+
+    @Data
+    @FieldDefaults(level = AccessLevel.PRIVATE)
+    public static class User {
+        final int id;
+        final String name;
+    }
+
+    @Data
+    public static class Item {
+        final int id;
+        final String name;
+        final String description;
+    }
 }

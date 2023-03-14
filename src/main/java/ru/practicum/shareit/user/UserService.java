@@ -4,12 +4,9 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.BadRequestException;
-import ru.practicum.shareit.exception.ConflictException;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.implement.Storage;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
@@ -19,12 +16,10 @@ import java.util.List;
 @AllArgsConstructor
 @Slf4j
 public class UserService {
-    final Storage<User> userStorage;
+    final UserRepository userStorage;
 
     public User add(User user) {
-        throwIfEmailInUse(user);
-
-        return userStorage.add(user);
+        return userStorage.save(user);
     }
 
     public List<User> get() {
@@ -32,36 +27,27 @@ public class UserService {
     }
 
     public User update(User user) {
-        User updateUser = userStorage.find(user.getId())
+        User updateUser = userStorage.findById(user.getId())
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         if (user.getName() != null) {
             updateUser.setName(user.getName());
         }
         if (user.getEmail() != null) {
-            if (!user.getEmail().equals(updateUser.getEmail())) {
-                throwIfEmailInUse(user);
-            }
             updateUser.setEmail(user.getEmail());
         }
 
-        return userStorage.update(updateUser);
+        return userStorage.save(updateUser);
     }
 
     public User get(int id) {
-        return userStorage.find(id)
+        return userStorage.findById(id)
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
     }
 
     public void delete(int id) {
-        User user = userStorage.find(id)
+        User user = userStorage.findById(id)
                 .orElseThrow(() -> new BadRequestException("Такого пользователя не существует"));
 
-        userStorage.delete(id);
-    }
-
-    private void throwIfEmailInUse(User user) {
-        if (userStorage.find(user.getEmail()).isPresent()) {
-            throw new ConflictException(HttpStatus.CONFLICT, "Такой email уже используется");
-        }
+        userStorage.delete(user);
     }
 }

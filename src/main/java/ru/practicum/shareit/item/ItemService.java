@@ -6,8 +6,8 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.implement.Storage;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.ArrayList;
@@ -19,19 +19,19 @@ import java.util.List;
 @Slf4j
 public class ItemService {
 
-    final Storage<Item> itemStorage;
-    final Storage<User> userStorage;
+    final ItemRepository itemStorage;
+    final UserRepository userStorage;
 
     public Item add(Item item, int id) {
-        User user = userStorage.find(id)
+        User user = userStorage.findById(id)
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
-        return itemStorage.add(item);
+        return itemStorage.save(item);
     }
 
     public Item update(Item item, int itemId, int userId) {
-        User user = userStorage.find(userId)
+        User user = userStorage.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
-        Item updateItem = itemStorage.find(itemId)
+        Item updateItem = itemStorage.findById(itemId)
                 .orElseThrow(() -> new NotFoundException("Вещь не найдена"));
         if (updateItem.getOwner() != userId) {
             throw new NotFoundException("Владелец не совпадает с " +
@@ -50,16 +50,16 @@ public class ItemService {
             log.info("Обновлено описание вещи {}", itemId);
         }
 
-        return itemStorage.update(updateItem);
+        return itemStorage.save(updateItem);
     }
 
     public Item find(int id) {
-        return itemStorage.find(id)
+        return itemStorage.findById(id)
                 .orElseThrow(() -> new NotFoundException("Вещь не найдена"));
     }
 
     public List<Item> findAllByUser(int id) {
-        return itemStorage.findAll(id);
+        return itemStorage.getAllByOwnerOrderByIdAsc(id);
     }
 
     public List<Item> findByReview(String str) {
@@ -68,6 +68,6 @@ public class ItemService {
             return new ArrayList<>();
         }
 
-        return itemStorage.findAll(str);
+        return itemStorage.search(str);
     }
 }
