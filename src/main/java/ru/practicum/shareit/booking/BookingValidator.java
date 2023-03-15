@@ -17,6 +17,15 @@ public class BookingValidator implements Validator<BookingRequestDto> {
         if (bookingDto == null) {
             throw new BadRequestException("Пустой запрос");
         }
+        if (bookingDto.getEnd() == null) {
+            throw new BadRequestException("Не указано время конца бронирования");
+        }
+        if (bookingDto.getStart() == null) {
+            throw new BadRequestException("Не указано время начала бронирования");
+        }
+        if (bookingDto.getStart().compareTo(bookingDto.getEnd()) == 0) {
+            throw new BadRequestException("Время начала и окончания бронирования совпадают");
+        }
         if (bookingDto.getEnd().isBefore(bookingDto.getStart())) {
             throw new BadRequestException("Время конца бронирования раньше времени начала");
         }

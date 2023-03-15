@@ -10,7 +10,6 @@ import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.status.Status;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
@@ -172,41 +171,34 @@ public class BookingService {
         return bookings;
     }
 
-    public Booking getNextBookingByItemId(int itemId, String status) {
-        List<Booking> bookings = getByItemId(itemId, Status.valueOf(status));
-        LocalDateTime now = LocalDateTime.now();
-
-        Booking nextBooking = null;
+    public Booking getNextBookingByItemId(int itemId) {
+        List<Booking> bookings = bookingStorage
+                .findNextBookingsByItemId(itemId, LocalDateTime.now(), APPROVED);
         if (!bookings.isEmpty()) {
-            Booking next = bookings.get(bookings.size() - 1);
-            for (Booking b : bookings) {
-                if (b.getStart().isAfter(now) && b.getStart().isBefore(next.getStart())) next = b;
-            }
-            nextBooking = next;
+            log.info("получено следующее бронирование");
+            return bookings.get(0);
+        } else {
+            return null;
         }
-        log.info("получено следующее бронирование");
-
-        return nextBooking;
     }
 
-    public Booking getLastBookingByItemId(int itemId, String status) {
-        List<Booking> bookings = getByItemId(itemId, Status.valueOf(status));
-        LocalDateTime now = LocalDateTime.now();
-        Booking lastBooking = null;
+    public Booking getLastBookingByItemId(int itemId) {
+        List<Booking> bookings = bookingStorage
+                .findLastBookingsByItemId(itemId, LocalDateTime.now(), APPROVED);
         if (!bookings.isEmpty()) {
-            Booking last = bookings.get(0);
-            for (Booking b : bookings) {
-                if (b.getEnd().isBefore(now) && b.getEnd().isAfter(last.getEnd())) last = b;
+            log.info("получено последнее бронирование");
+            log.info("количество последних бронирований = " + bookings.size());
+            if (bookings.size() == 1) {
+                log.info("Вернули первое. start = " + bookings.get(0).getStart() + "; end = " + bookings.get(0).getEnd());
+                return bookings.get(0);
+            } else {
+                log.info("Первое. start = " + bookings.get(0).getStart() + "; end = " + bookings.get(0).getEnd());
+                log.info("Вернули второе. start = " + bookings.get(1).getStart() + "; end = " + bookings.get(1).getEnd());
+                return bookings.get(1);
             }
-            lastBooking = last;
+        } else {
+            return null;
         }
-        log.info("получено полследнее бронирование");
-
-        return lastBooking;
-    }
-
-    public List<Booking> getByItemId(int itemId, Status status) {
-        return bookingStorage.findByItemIdAndStatusEquals(itemId, status);
     }
 
     private void throwIfUserNotExist(int id) {

@@ -73,8 +73,8 @@ public class ItemController {
         Item item = itemService.find(itemId);
         ItemBookingDto itemBookingDto = ItemMapper.toItemBookingDto(item);
         if (item.getOwner() == userId) {
-            Booking next = bookingService.getNextBookingByItemId(itemBookingDto.getId(), "APPROVED");
-            Booking last = bookingService.getLastBookingByItemId(itemBookingDto.getId(), "APPROVED");
+            Booking next = bookingService.getNextBookingByItemId(itemBookingDto.getId());
+            Booking last = bookingService.getLastBookingByItemId(itemBookingDto.getId());
 
             itemBookingDto.setLastBooking(last);
             itemBookingDto.setNextBooking(next);
@@ -97,8 +97,8 @@ public class ItemController {
         List<ItemBookingDto> dto = new ArrayList<>();
         for (Item item : itemService.findAllByUser(userId)) {
             ItemBookingDto itemBookingDto = ItemMapper.toItemBookingDto(item);
-            Booking next = bookingService.getNextBookingByItemId(itemBookingDto.getId(), "APPROVED");
-            Booking last = bookingService.getLastBookingByItemId(itemBookingDto.getId(), "APPROVED");
+            Booking next = bookingService.getNextBookingByItemId(itemBookingDto.getId());
+            Booking last = bookingService.getLastBookingByItemId(itemBookingDto.getId());
 
             itemBookingDto.setLastBooking(last);
             itemBookingDto.setNextBooking(next);
