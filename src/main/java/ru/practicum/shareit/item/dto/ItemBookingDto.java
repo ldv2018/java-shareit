@@ -28,7 +28,7 @@ public class ItemBookingDto {
     Booking nextBooking;
     List<CommentDto> comments;
     int owner;
-    int request;
+    int requestId;
 
     @Data
     @AllArgsConstructor

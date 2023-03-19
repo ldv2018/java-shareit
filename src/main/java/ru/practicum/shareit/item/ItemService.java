@@ -4,6 +4,9 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
@@ -58,8 +61,10 @@ public class ItemService {
                 .orElseThrow(() -> new NotFoundException("Вещь не найдена"));
     }
 
-    public List<Item> findAllByUser(int id) {
-        return itemStorage.getAllByOwnerOrderByIdAsc(id);
+    public List<Item> findAllByUser(int id, int from, int size) {
+        Pageable pageable = PageRequest.of(from, size);
+        Page<Item> items = itemStorage.getAllByOwnerOrderByIdAsc(id, pageable);
+        return items.getContent();
     }
 
     public List<Item> findByReview(String str) {
