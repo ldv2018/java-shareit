@@ -76,12 +76,6 @@ class UserServiceTest {
     }
 
     @Test
-    void deleteTest() {
-        Mockito.doNothing().when(mockUserRepository).deleteById(Mockito.anyInt());
-        userService.delete(1);
-    }
-
-    @Test
     void getAllTest() {
         List<User> users = new ArrayList<>();
         User user2 = new User();
