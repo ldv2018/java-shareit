@@ -42,10 +42,10 @@ public class ItemRequestService {
     public Map<ItemRequest, List<Item>> get(int userId) {
         log.info("Получение List<ItemRequest> от пользователя " + userId);
         throwIfUserNotFound(userId);
-        List<ItemRequest> UserItemRequests = itemRequestRepository.findAllByRequesterIdOrderByCreated(userId);
+        List<ItemRequest> userItemRequests = itemRequestRepository.findAllByRequesterIdOrderByCreated(userId);
         log.info("List<ItemRequest> от пользователя " + userId + " получен");
         Map<ItemRequest, List<Item>> itemRequestAndItemAnswer = new HashMap<>();
-        for (ItemRequest itemRequest : UserItemRequests) {
+        for (ItemRequest itemRequest : userItemRequests) {
             List<Item> itemAnswers = itemRepository.findAllByRequestId(itemRequest.getId());
             itemRequestAndItemAnswer.put(itemRequest, itemAnswers);
         }

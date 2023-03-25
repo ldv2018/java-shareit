@@ -37,12 +37,12 @@ public class ItemRequestControllerTest {
     ItemRequestService mockItemRequestService;
     @Autowired
     ObjectMapper objectMapper;
-    final String HEADER = "X-Sharer-User-Id";
+    final String header = "X-Sharer-User-Id";
 
     @Test
     public void addIfRequestBodyIsNullTest() throws Exception {
         mockMvc.perform(post("/requests")
-                    .header(HEADER, 1)
+                    .header(header, 1)
                     .content(objectMapper.writeValueAsString(null))
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -62,7 +62,7 @@ public class ItemRequestControllerTest {
                 1,
                 null);
         mockMvc.perform(post("/requests")
-                        .header(HEADER, 1)
+                        .header(header, 1)
                         .content(objectMapper.writeValueAsString(irRequest))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -76,7 +76,7 @@ public class ItemRequestControllerTest {
         Mockito.when(mockItemRequestService.get(Mockito.anyInt()))
                 .thenReturn(new HashMap<>());
         mockMvc.perform(get("/requests")
-                    .header(HEADER, 1)
+                    .header(header, 1)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -98,7 +98,7 @@ public class ItemRequestControllerTest {
         Mockito.when(mockItemRequestService.get(Mockito.anyInt()))
                 .thenReturn(itemRequestAndItemAnswer);
         mockMvc.perform(get("/requests")
-                    .header(HEADER, 1)
+                    .header(header, 1)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -108,13 +108,13 @@ public class ItemRequestControllerTest {
     @Test
     public void getAllIfBadPageParameters() throws Exception {
         mockMvc.perform((get("/requests/all?from=-1&size=2"))
-                    .header(HEADER, 1)
+                    .header(header, 1)
                     .accept(MediaType.APPLICATION_JSON)
                     .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
 
         mockMvc.perform((get("/requests/all?from=2&size=-1"))
-                        .header(HEADER, 1)
+                        .header(header, 1)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
@@ -146,7 +146,7 @@ public class ItemRequestControllerTest {
                         .thenReturn(itemRequestAndItemAnswer);
 
         mockMvc.perform(get("/requests/all?from=1&size=2")
-                .header(HEADER, 1)
+                .header(header, 1)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -172,7 +172,7 @@ public class ItemRequestControllerTest {
         mockMvc.perform(get("/requests/1")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HEADER, 1))
+                .header(header, 1))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.items", Matchers.notNullValue()));
     }

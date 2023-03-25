@@ -42,7 +42,7 @@ public class BookingControllerTest {
     MockMvc mockMvc;
     @Autowired
     ObjectMapper objectMapper;
-    final String HEADER = "X-Sharer-User-Id";
+    final String header = "X-Sharer-User-Id";
     BookingResponseDto bookingResponseDto;
     BookingRequestDto bookingRequestDto;
 
@@ -81,7 +81,7 @@ public class BookingControllerTest {
         Mockito.when(mockBookingMapper.toBookingResponseDto(Mockito.any(Booking.class)))
                         .thenReturn(bookingResponseDto);
         mockMvc.perform(post("/bookings")
-                .header(HEADER, 1)
+                .header(header, 1)
                 .content(objectMapper.writeValueAsString(bookingRequestDto))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))

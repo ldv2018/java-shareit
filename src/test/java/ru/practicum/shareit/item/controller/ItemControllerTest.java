@@ -51,7 +51,7 @@ public class ItemControllerTest {
     ObjectMapper mapper;
     @Autowired
     MockMvc mvc;
-    final String HEADER = "X-Sharer-User-Id";
+    final String header = "X-Sharer-User-Id";
     final ItemDto itemDto = new ItemDto(1, "name", "description", true, 1, 1);
     final Item item = new Item(1, "name", "description", true, 1, 1);
 
@@ -61,7 +61,7 @@ public class ItemControllerTest {
         Mockito.when(itemService.add(Mockito.any(Item.class), Mockito.anyInt()))
                         .thenReturn(item);
         mvc.perform(post("/items")
-                .header(HEADER, 1)
+                .header(header, 1)
                 .content(mapper.writeValueAsString(itemDto))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -82,7 +82,7 @@ public class ItemControllerTest {
                         Mockito.anyInt()))
                 .thenReturn(updatedItem);
         mvc.perform(patch("/items/1")
-                .header(HEADER, 1)
+                .header(header, 1)
                 .content(mapper.writeValueAsString(updatedItem))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -127,7 +127,7 @@ public class ItemControllerTest {
                 .thenReturn(comments);
 
         mvc.perform(get("/items/1")
-                        .header(HEADER, 1)
+                        .header(header, 1)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", Matchers.is(item.getName()), String.class))
@@ -157,7 +157,7 @@ public class ItemControllerTest {
                         Status.APPROVED,
                         2));
         mvc.perform(get("/items/")
-                .header(HEADER, 1)
+                .header(header, 1)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", Matchers.hasSize(1)));
@@ -170,7 +170,7 @@ public class ItemControllerTest {
         Mockito.when(itemService.findByReview(Mockito.anyString()))
                 .thenReturn(items);
         mvc.perform(get("/items/search?text='desc'/")
-                .header(HEADER, 1)
+                .header(header, 1)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", Matchers.hasSize(1)));
