@@ -7,14 +7,14 @@ DROP TABLE IF EXISTS
     CASCADE;
 
 CREATE TABLE IF NOT EXISTS users (
-    user_id     serial,
+    user_id     int auto_increment,
     user_name   text,
     email       text,
     CONSTRAINT pk_user PRIMARY KEY (user_id)
 );
 
 CREATE TABLE IF NOT EXISTS items (
-    item_id         serial,
+    item_id         int auto_increment,
     item_name       text,
     description     text,
     available       boolean,
@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS items (
 );
 
 CREATE TABLE IF NOT EXISTS requests (
-    request_id      serial,
+    request_id      int auto_increment,
     description     text,
     requester_id    int,  --user
     created         timestamp without time zone,
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS requests (
 );
 
 CREATE TABLE IF NOT EXISTS bookings (
-    booking_id      serial,
+    booking_id      int auto_increment,
     start_date      timestamp without time zone,
     end_date        timestamp without time zone,
     item_id         int,    --item
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS bookings (
 );
 
 CREATE TABLE IF NOT EXISTS comments (
-    comment_id      serial,
+    comment_id      int auto_increment,
     description     text,
     item_id         int,    --item
     author_id       int,  --user
