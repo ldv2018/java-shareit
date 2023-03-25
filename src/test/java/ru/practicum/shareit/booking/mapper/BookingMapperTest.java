@@ -43,7 +43,7 @@ public class BookingMapperTest {
                 .thenReturn(item);
         Mockito.when(mockUserService.get(Mockito.anyInt()))
                 .thenReturn(user);
-        BookingResponseDto bookingResponseDto= bookingMapper.toBookingResponseDto(booking);
+        BookingResponseDto bookingResponseDto = bookingMapper.toBookingResponseDto(booking);
         Assertions.assertEquals(bookingResponseDto.getId(), 1);
         Assertions.assertEquals(bookingResponseDto.getStart(), booking.getStart());
         Assertions.assertEquals(bookingResponseDto.getItem().getName(), "name");
