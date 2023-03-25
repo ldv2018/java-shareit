@@ -1,7 +1,7 @@
 package ru.practicum.shareit.request;
 
 import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -22,11 +22,10 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping(path = "/requests")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Slf4j
 public class ItemRequestController {
     final ItemRequestService itemRequestService;
-    final ItemRequestMapper itemRequestMapper;
     final String user = "X-Sharer-User-Id";
 
     @PostMapping
@@ -40,7 +39,7 @@ public class ItemRequestController {
         }
         ItemRequest ir = itemRequestService.add(itemRequest, userId);
 
-        return itemRequestMapper.toItemRequestDto(ir);
+        return ItemRequestMapper.toItemRequestDto(ir);
     }
 
     @GetMapping
@@ -57,10 +56,10 @@ public class ItemRequestController {
                 .collect(Collectors.toList());
         List<ItemRequestDto> response = new ArrayList<>();
         for (ItemRequest itemRequest : itemRequests) {
-            ItemRequestDto itemRequestDto = itemRequestMapper.toItemRequestDto(itemRequest);
+            ItemRequestDto itemRequestDto = ItemRequestMapper.toItemRequestDto(itemRequest);
             List<ItemRequestDto.Answer> answers = new ArrayList<>();
             for (Item item : itemRequestAndItemAnswer.get(itemRequest)) {
-                answers.add(itemRequestMapper.toAnswer(item));
+                answers.add(ItemRequestMapper.toAnswer(item));
             }
             itemRequestDto.setItems(answers);
             response.add(itemRequestDto);
@@ -86,10 +85,10 @@ public class ItemRequestController {
                 .collect(Collectors.toList());
         List<ItemRequestDto> response = new ArrayList<>();
         for (ItemRequest itemRequest : itemRequests) {
-            ItemRequestDto itemRequestDto = itemRequestMapper.toItemRequestDto(itemRequest);
+            ItemRequestDto itemRequestDto = ItemRequestMapper.toItemRequestDto(itemRequest);
             List<ItemRequestDto.Answer> answers = new ArrayList<>();
             for (Item item : itemRequestsAndAnswers.get(itemRequest)) {
-                answers.add(itemRequestMapper.toAnswer(item));
+                answers.add(ItemRequestMapper.toAnswer(item));
             }
             itemRequestDto.setItems(answers);
             response.add(itemRequestDto);
@@ -107,10 +106,10 @@ public class ItemRequestController {
         List<ItemRequest> itemRequests = itemRequestAndItemAnswer.keySet()
                 .stream()
                 .collect(Collectors.toList());
-        ItemRequestDto response = itemRequestMapper.toItemRequestDto(itemRequests.get(0));
+        ItemRequestDto response = ItemRequestMapper.toItemRequestDto(itemRequests.get(0));
         List<ItemRequestDto.Answer> answers = new ArrayList<>();
         for (Item item : itemRequestAndItemAnswer.get(itemRequests.get(0))) {
-            answers.add(itemRequestMapper.toAnswer(item));
+            answers.add(ItemRequestMapper.toAnswer(item));
         }
         response.setItems(answers);
 
