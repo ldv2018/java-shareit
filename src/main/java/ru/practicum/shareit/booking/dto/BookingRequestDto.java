@@ -10,19 +10,16 @@ import javax.validation.constraints.Future;
 import javax.validation.constraints.FutureOrPresent;
 import java.time.LocalDateTime;
 
-/**
- * TODO Sprint add-bookings.
- */
-@AllArgsConstructor
 @Data
+@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class BookingDto {
-    int id;
+public class BookingRequestDto {
+    long id;
     @FutureOrPresent
     LocalDateTime start;
     @Future
     LocalDateTime end;
     int itemId;
+    int bookerId;
     Status status;
-    int booker;
 }
