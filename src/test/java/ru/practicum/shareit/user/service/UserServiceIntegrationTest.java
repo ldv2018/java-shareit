@@ -8,7 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.web.server.ResponseStatusException;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.model.User;
 
@@ -38,10 +38,11 @@ public class UserServiceIntegrationTest {
     @Test
     void patchTest() {
         userService.add(user1);
+        user2.setId(1);
         User userTest = userService.update(user2);
         Assertions.assertEquals(user2, userTest);
         user2.setId(5);
-        Assertions.assertThrows(ResponseStatusException.class, () -> {
+        Assertions.assertThrows(NotFoundException.class, () -> {
             userService.update(user2);
         });
     }
