@@ -14,7 +14,6 @@ import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
-import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -216,7 +215,8 @@ public class BookingService {
     }
 
     private void throwIfUserNotExist(int id) {
-        User user = userStorage.findById(id)
-                .orElseThrow(() -> new NotFoundException("Пользователя " + id + " не существует"));
+        if (userStorage.findById(id).isEmpty()) {
+            throw new NotFoundException("Пользователя " + id + " не существует");
+        }
     }
 }

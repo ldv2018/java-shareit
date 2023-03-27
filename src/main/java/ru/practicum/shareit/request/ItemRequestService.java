@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
@@ -42,10 +43,10 @@ public class ItemRequestService {
     public Map<ItemRequest, List<Item>> get(int userId) {
         log.info("Получение List<ItemRequest> от пользователя " + userId);
         throwIfUserNotFound(userId);
-        List<ItemRequest> userItemRequests = itemRequestRepository.findAllByRequesterIdOrderByCreated(userId);
+        List<ItemRequest> userItemRequestMessageDtos = itemRequestRepository.findAllByRequesterIdOrderByCreated(userId);
         log.info("List<ItemRequest> от пользователя " + userId + " получен");
         Map<ItemRequest, List<Item>> itemRequestAndItemAnswer = new HashMap<>();
-        for (ItemRequest itemRequest : userItemRequests) {
+        for (ItemRequest itemRequest : userItemRequestMessageDtos) {
             List<Item> itemAnswers = itemRepository.findAllByRequestId(itemRequest.getId());
             itemRequestAndItemAnswer.put(itemRequest, itemAnswers);
         }

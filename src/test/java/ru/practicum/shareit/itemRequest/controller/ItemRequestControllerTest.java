@@ -13,9 +13,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.request.ItemRequestController;
 import ru.practicum.shareit.request.ItemRequestService;
+import ru.practicum.shareit.request.dto.ItemRequestMessageDto;
+import ru.practicum.shareit.request.model.ItemRequest;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -57,7 +58,7 @@ public class ItemRequestControllerTest {
                 LocalDateTime.now().minusDays(1));
         Mockito.when(mockItemRequestService.add(Mockito.any(ItemRequest.class), Mockito.anyInt()))
                 .thenReturn(ir);
-        ItemRequest irRequest = new ItemRequest(1,
+        ItemRequestMessageDto irRequest = new ItemRequestMessageDto(1,
                 "desc",
                 1,
                 null);
@@ -176,7 +177,4 @@ public class ItemRequestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.items", Matchers.notNullValue()));
     }
-
-
-
 }

@@ -8,7 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.request.dto.ItemRequestDto;
+import ru.practicum.shareit.request.dto.ItemRequestMessageDto;
+import ru.practicum.shareit.request.dto.ItemRequestResponseDto;
+import ru.practicum.shareit.request.model.ItemRequest;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -30,50 +32,51 @@ public class ItemRequestController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ItemRequestDto add(@RequestHeader(user) int userId,
-                              @Valid @RequestBody ItemRequest itemRequest) {
+    public ItemRequestResponseDto add(@RequestHeader(user) int userId,
+                                      @Valid @RequestBody ItemRequestMessageDto itemRequestMessageDto) {
         log.info("Получен запрос на добавление itemRequest от пользователя " + userId);
-        if (itemRequest == null) {
+        if (itemRequestMessageDto == null) {
             log.info("Пустое тело запроса");
             throw new BadRequestException("Пустой запрос");
         }
+        ItemRequest itemRequest = ItemRequestMapper.toItemRequest(itemRequestMessageDto);
         ItemRequest ir = itemRequestService.add(itemRequest, userId);
 
-        return ItemRequestMapper.toItemRequestDto(ir);
+        return ItemRequestMapper.toItemRequestResponseDto(ir);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<ItemRequestDto> get(@RequestHeader(user) int userId) {
+    public List<ItemRequestResponseDto> get(@RequestHeader(user) int userId) {
         log.info("Получен запрос на список itemRequest от пользователя " + userId);
         Map<ItemRequest, List<Item>> itemRequestAndItemAnswer = itemRequestService.get(userId);
         if (itemRequestAndItemAnswer.isEmpty()) {
             log.info("List<ItemRequest> от пользователя " + userId + " пустой");
-            return new ArrayList<ItemRequestDto>();
+            return new ArrayList<ItemRequestResponseDto>();
         }
         List<ItemRequest> itemRequests = itemRequestAndItemAnswer.keySet()
                 .stream()
                 .collect(Collectors.toList());
-        List<ItemRequestDto> response = new ArrayList<>();
+        List<ItemRequestResponseDto> response = new ArrayList<>();
         for (ItemRequest itemRequest : itemRequests) {
-            ItemRequestDto itemRequestDto = ItemRequestMapper.toItemRequestDto(itemRequest);
-            List<ItemRequestDto.Answer> answers = new ArrayList<>();
+            ItemRequestResponseDto itemRequestResponseDto = ItemRequestMapper.toItemRequestResponseDto(itemRequest);
+            List<ItemRequestResponseDto.Answer> answers = new ArrayList<>();
             for (Item item : itemRequestAndItemAnswer.get(itemRequest)) {
                 answers.add(ItemRequestMapper.toAnswer(item));
             }
-            itemRequestDto.setItems(answers);
-            response.add(itemRequestDto);
+            itemRequestResponseDto.setItems(answers);
+            response.add(itemRequestResponseDto);
         }
         log.info("список itemRequest для пользователя " + userId + " сформирован");
 
         return response;
     }
 
-    @GetMapping("all")
+    @GetMapping("/all")
     @ResponseStatus(HttpStatus.OK)
-    public List<ItemRequestDto> getAll(@RequestHeader(value = user) int userId,
-                                       @RequestParam(defaultValue = "0") int from,
-                                       @RequestParam(defaultValue = "99") int size) {
+    public List<ItemRequestResponseDto> getAll(@RequestHeader(value = user) int userId,
+                                               @RequestParam(defaultValue = "0") int from,
+                                               @RequestParam(defaultValue = "99") int size) {
         log.info("Получен запрос на список всех itemRequest");
         if (from < 0 || size < 1) {
             log.info("Получены неверные значения size = " + size + ", from = " + from);
@@ -83,15 +86,15 @@ public class ItemRequestController {
         List<ItemRequest> itemRequests = itemRequestsAndAnswers.keySet()
                 .stream()
                 .collect(Collectors.toList());
-        List<ItemRequestDto> response = new ArrayList<>();
+        List<ItemRequestResponseDto> response = new ArrayList<>();
         for (ItemRequest itemRequest : itemRequests) {
-            ItemRequestDto itemRequestDto = ItemRequestMapper.toItemRequestDto(itemRequest);
-            List<ItemRequestDto.Answer> answers = new ArrayList<>();
+            ItemRequestResponseDto itemRequestResponseDto = ItemRequestMapper.toItemRequestResponseDto(itemRequest);
+            List<ItemRequestResponseDto.Answer> answers = new ArrayList<>();
             for (Item item : itemRequestsAndAnswers.get(itemRequest)) {
                 answers.add(ItemRequestMapper.toAnswer(item));
             }
-            itemRequestDto.setItems(answers);
-            response.add(itemRequestDto);
+            itemRequestResponseDto.setItems(answers);
+            response.add(itemRequestResponseDto);
         }
         log.info("список itemRequest сформирован");
 
@@ -100,14 +103,14 @@ public class ItemRequestController {
 
     @GetMapping("{requestId}")
     @ResponseStatus(HttpStatus.OK)
-    public ItemRequestDto get(@RequestHeader(user) int userId,
-                              @PathVariable int requestId) {
+    public ItemRequestResponseDto get(@RequestHeader(user) int userId,
+                                      @PathVariable int requestId) {
         Map<ItemRequest, List<Item>> itemRequestAndItemAnswer = itemRequestService.get(userId, requestId);
         List<ItemRequest> itemRequests = itemRequestAndItemAnswer.keySet()
                 .stream()
                 .collect(Collectors.toList());
-        ItemRequestDto response = ItemRequestMapper.toItemRequestDto(itemRequests.get(0));
-        List<ItemRequestDto.Answer> answers = new ArrayList<>();
+        ItemRequestResponseDto response = ItemRequestMapper.toItemRequestResponseDto(itemRequests.get(0));
+        List<ItemRequestResponseDto.Answer> answers = new ArrayList<>();
         for (Item item : itemRequestAndItemAnswer.get(itemRequests.get(0))) {
             answers.add(ItemRequestMapper.toAnswer(item));
         }

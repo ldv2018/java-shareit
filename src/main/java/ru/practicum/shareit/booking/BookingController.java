@@ -33,7 +33,7 @@ public class BookingController {
     @ResponseStatus(HttpStatus.CREATED)
     public BookingResponseDto add(@RequestHeader(user) int userId,
                                       @Valid @RequestBody BookingRequestDto bookingRequestDto) {
-        bookingValidator.check(bookingRequestDto);
+        bookingValidator.throwIfNotValid(bookingRequestDto);
         Booking booking = bookingMapper.toBooking(bookingRequestDto);
         Booking returnBooking = bookingService.add(booking, userId);
 

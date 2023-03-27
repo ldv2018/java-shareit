@@ -1,32 +1,34 @@
 package ru.practicum.shareit.request;
 
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.request.dto.ItemRequestDto;
+import ru.practicum.shareit.request.dto.ItemRequestMessageDto;
+import ru.practicum.shareit.request.dto.ItemRequestResponseDto;
+import ru.practicum.shareit.request.model.ItemRequest;
 
 import java.util.ArrayList;
 
 public class ItemRequestMapper {
-    public static ItemRequestDto toItemRequestDto(ItemRequest itemRequest) {
-        return new ItemRequestDto(
+    public static ItemRequestResponseDto toItemRequestResponseDto(ItemRequest itemRequest) {
+        return new ItemRequestResponseDto(
                 itemRequest.getId(),
                 itemRequest.getDescription(),
                 itemRequest.getRequesterId(),
                 itemRequest.getCreated(),
-                new ArrayList<ItemRequestDto.Answer>()
+                new ArrayList<ItemRequestResponseDto.Answer>()
         );
     }
 
-    public ItemRequest toItemRequest(ItemRequestDto itemRequestDto) {
+    public static ItemRequest toItemRequest(ItemRequestMessageDto itemRequestMessageDto) {
         return new ItemRequest(
-                itemRequestDto.getId(),
-                itemRequestDto.getDescription(),
-                itemRequestDto.getRequesterId(),
-                itemRequestDto.getCreated()
+                itemRequestMessageDto.getId(),
+                itemRequestMessageDto.getDescription(),
+                itemRequestMessageDto.getRequesterId(),
+                itemRequestMessageDto.getCreated()
         );
     }
 
-    public static ItemRequestDto.Answer toAnswer(Item item) {
-        return new ItemRequestDto.Answer(
+    public static ItemRequestResponseDto.Answer toAnswer(Item item) {
+        return new ItemRequestResponseDto.Answer(
                 item.getId(),
                 item.getName(),
                 item.getDescription(),

@@ -14,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ItemRequestDto {
+public class ItemRequestResponseDto {
     int id;
     String description;
     int requesterId;
