@@ -30,6 +30,6 @@ public class Item {
     Boolean available;
     @Column(name = "item_owner")
     int owner;
-    @Column(name = "request")
-    int request;
+    @Column(name = "request_id")
+    int requestId;
 }

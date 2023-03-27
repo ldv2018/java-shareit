@@ -4,6 +4,9 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.exception.BadRequestException;
@@ -11,7 +14,6 @@ import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
-import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -76,41 +78,47 @@ public class BookingService {
         }
     }
 
-    public List<Booking> getAll(int userId, String state) {
-        List<Booking> bookings;
-        LocalDateTime dateTime = LocalDateTime.now();
+    public List<Booking> getAll(int userId, String state, int from, int size) {
         throwIfUserNotExist(userId);
+        Page<Booking> bookings;
+        Pageable pageable = PageRequest.of(from / size, size);
+        LocalDateTime dateTime = LocalDateTime.now();
 
         switch (state) {
             case "ALL":
-                bookings = bookingStorage.findByBookerIdOrderByStartDesc(userId);
+                bookings = bookingStorage.findByBookerIdOrderByStartDesc(userId, pageable);
                 break;
             case "CURRENT":
                 bookings = bookingStorage.findByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(
                         userId,
                         dateTime,
-                        dateTime);
+                        dateTime,
+                        pageable);
                 break;
             case "PAST":
                 bookings = bookingStorage.findByBookerIdAndEndIsBeforeAndStatusEqualsOrderByStartDesc(
                         userId,
                         dateTime,
-                        APPROVED);
+                        APPROVED,
+                        pageable);
                 break;
             case "FUTURE":
                 bookings = bookingStorage.findByBookerIdAndStartIsAfterOrderByStartDesc(
                         userId,
-                        dateTime);
+                        dateTime,
+                        pageable);
                 break;
             case "WAITING":
                 bookings = bookingStorage.findByBookerIdAndStatusEqualsOrderByStartDesc(
                         userId,
-                        WAITING);
+                        WAITING,
+                        pageable);
                 break;
             case "REJECTED":
                 bookings = bookingStorage.findByBookerIdAndStatusEqualsOrderByStartDesc(
                         userId,
-                        REJECTED);
+                        REJECTED,
+                        pageable);
                 break;
             default:
                 log.error("запрошен некорректный статус");
@@ -118,49 +126,54 @@ public class BookingService {
         }
         log.info("получен список бронирований");
 
-        return bookings;
+        return bookings.getContent();
     }
 
-    public List<Booking> getAllByOwner(int userId, String state) {
+    public List<Booking> getAllByOwner(int userId, String state, int from, int size) {
+        throwIfUserNotExist(userId);
         List<Integer> ownerItems = itemStorage.getAllByOwnerOrderByIdAsc(userId)
                 .stream()
                 .map(Item::getId)
                 .collect(Collectors.toList());
-
-        List<Booking> bookings;
+        Page<Booking> bookings;
+        Pageable pageable = PageRequest.of(from, size);
         LocalDateTime dateTime = LocalDateTime.now();
-        throwIfUserNotExist(userId);
 
         switch (state) {
             case "ALL":
-                bookings = bookingStorage.findByItemIdInOrderByStartDesc(ownerItems);
+                bookings = bookingStorage.findByItemIdInOrderByStartDesc(ownerItems, pageable);
                 break;
             case "CURRENT":
                 bookings = bookingStorage.findByItemIdInAndStartBeforeAndEndIsAfterOrderByStartDesc(
                         ownerItems,
                         dateTime,
-                        dateTime);
+                        dateTime,
+                        pageable);
                 break;
             case "PAST":
                 bookings = bookingStorage.findByItemIdInAndEndIsBeforeAndStatusEqualsOrderByStartDesc(
                         ownerItems,
                         dateTime,
-                        APPROVED);
+                        APPROVED,
+                        pageable);
                 break;
             case "FUTURE":
                 bookings = bookingStorage.findByItemIdInAndStartIsAfterOrderByStartDesc(
                         ownerItems,
-                        dateTime);
+                        dateTime,
+                        pageable);
                 break;
             case "WAITING":
                 bookings = bookingStorage.findByItemIdInAndStatusEqualsOrderByStartDesc(
                         ownerItems,
-                        WAITING);
+                        WAITING,
+                        pageable);
                 break;
             case "REJECTED":
                 bookings = bookingStorage.findByItemIdInAndStatusEqualsOrderByStartDesc(
                         ownerItems,
-                        REJECTED);
+                        REJECTED,
+                        pageable);
                 break;
             default:
                 log.error("запрошен некорректный статус");
@@ -168,7 +181,7 @@ public class BookingService {
         }
         log.info("получен список бронирований");
 
-        return bookings;
+        return bookings.getContent();
     }
 
     public Booking getNextBookingByItemId(int itemId) {
@@ -202,7 +215,8 @@ public class BookingService {
     }
 
     private void throwIfUserNotExist(int id) {
-        User user = userStorage.findById(id)
-                .orElseThrow(() -> new NotFoundException("Пользователя " + id + " не существует"));
+        if (userStorage.findById(id).isEmpty()) {
+            throw new NotFoundException("Пользователя " + id + " не существует");
+        }
     }
 }

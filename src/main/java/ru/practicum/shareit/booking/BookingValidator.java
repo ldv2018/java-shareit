@@ -13,7 +13,7 @@ import javax.validation.Valid;
 public class BookingValidator implements Validator<BookingRequestDto> {
 
     @Override
-    public void check(@Valid BookingRequestDto bookingDto) {
+    public void throwIfNotValid(@Valid BookingRequestDto bookingDto) {
         if (bookingDto == null) {
             throw new BadRequestException("Пустой запрос");
         }

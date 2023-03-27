@@ -6,5 +6,5 @@ import javax.validation.Valid;
 
 @Validated
 public interface Validator<T> {
-    void check(@Valid T t);
+    void throwIfNotValid(@Valid T t);
 }

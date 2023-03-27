@@ -90,12 +90,18 @@ public class ItemController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<ItemBookingDto> findAllByOwner(@RequestHeader("X-Sharer-User-Id") int userId) {
+    public List<ItemBookingDto> findAllByOwner(@RequestHeader("X-Sharer-User-Id") int userId,
+                                               @RequestParam(defaultValue = "0") int from,
+                                               @RequestParam(defaultValue = "99") int size) {
         if (userId <= 0) {
             throw new BadRequestException("Идентификатор должен быть положительным");
         }
+        if (from < 0 || size < 1) {
+            log.info("Получены неверные значения size = " + size + ", from = " + from);
+            throw new BadRequestException("Параметры пагинации должны быть >= 0");
+        }
         List<ItemBookingDto> dto = new ArrayList<>();
-        for (Item item : itemService.findAllByUser(userId)) {
+        for (Item item : itemService.findAllByUser(userId, from, size)) {
             ItemBookingDto itemBookingDto = ItemMapper.toItemBookingDto(item);
             Booking next = bookingService.getNextBookingByItemId(itemBookingDto.getId());
             Booking last = bookingService.getLastBookingByItemId(itemBookingDto.getId());
