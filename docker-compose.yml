@@ -33,5 +33,6 @@ services:
       - POSTGRES_DB=shareit
       - POSTGRES_PASSWORD=root
       - POSTGRES_USER=postgres
-    volumes:
-      - .:/docker-entrypoint-initdb.d
+#    volumes:
+#      - .:/docker-entrypoint-initdb.d
+#      - /var/lib/postgresql/data/
