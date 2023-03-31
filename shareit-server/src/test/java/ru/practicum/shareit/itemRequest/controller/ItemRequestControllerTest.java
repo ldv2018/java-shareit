@@ -106,21 +106,6 @@ public class ItemRequestControllerTest {
                 .andExpect(jsonPath("$", Matchers.hasSize(1)));
     }
 
-/*    @Test
-    public void getAllIfBadPageParameters() throws Exception {
-        mockMvc.perform((get("/requests/all?from=-1&size=2"))
-                    .header(header, 1)
-                    .accept(MediaType.APPLICATION_JSON)
-                    .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-
-        mockMvc.perform((get("/requests/all?from=2&size=-1"))
-                        .header(header, 1)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-    }*/
-
     @Test
     public void getAllTest() throws Exception {
         Map<ItemRequest, List<Item>> itemRequestAndItemAnswer = new HashMap<>();
