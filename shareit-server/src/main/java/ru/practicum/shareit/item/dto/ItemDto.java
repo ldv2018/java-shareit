@@ -5,9 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-
 /**
  * TODO Sprint add-controllers.
  */
@@ -16,13 +13,8 @@ import javax.validation.constraints.NotNull;
 @FieldDefaults (level = AccessLevel.PRIVATE)
 public class ItemDto {
     int id;
-    @NotNull
-    @NotBlank
     String name;
-    @NotNull
-    @NotBlank
     String description;
-    @NotNull
     Boolean available;
     int owner;
     int requestId;

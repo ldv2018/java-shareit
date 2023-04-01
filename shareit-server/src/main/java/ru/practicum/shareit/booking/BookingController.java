@@ -11,7 +11,6 @@ import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.exception.BadRequestException;
 
-import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,15 +24,13 @@ import java.util.stream.Collectors;
 @Slf4j
 public class BookingController {
     final BookingService bookingService;
-    final BookingValidator bookingValidator;
     final BookingMapper bookingMapper;
     final String user = "X-Sharer-User-Id";
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public BookingResponseDto add(@RequestHeader(user) int userId,
-                                      @Valid @RequestBody BookingRequestDto bookingRequestDto) {
-        bookingValidator.throwIfNotValid(bookingRequestDto);
+                                      @RequestBody BookingRequestDto bookingRequestDto) {
         Booking booking = bookingMapper.toBooking(bookingRequestDto);
         Booking returnBooking = bookingService.add(booking, userId);
 

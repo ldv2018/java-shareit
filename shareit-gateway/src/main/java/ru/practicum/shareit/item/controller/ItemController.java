@@ -57,12 +57,12 @@ public class ItemController {
         return itemClient.getItem(itemId, userId);
     }
 
-/*    @DeleteMapping(value = "/{itemId}")
+    @DeleteMapping(value = "/{itemId}")
     public void deleteItem(@PathVariable @NotNull int itemId,
                            @RequestHeader(HEADER_REQUEST) int idUser) {
         log.info("Delete Item with {} user {}", itemId, idUser);
         itemClient.deleteItem(itemId, idUser);
-    }*/
+    }
 
     @GetMapping
     public ResponseEntity<Object> getAllByOwner(@RequestHeader(HEADER_REQUEST) int userId,

@@ -11,11 +11,20 @@ import javax.validation.Valid;
 @Component
 public class BookingMessageDtoValidator implements Validator<BookingMessageDto> {
     public void throwIfNotValid(@Valid BookingMessageDto bookingDto) {
-        if (bookingDto.getEnd().isBefore(bookingDto.getStart())) {
-            throw new BadRequestException("Время конца раньше времени начала");
+        if (bookingDto == null) {
+            throw new BadRequestException("Пустой запрос");
         }
-        if (bookingDto.getEnd().equals(bookingDto.getStart())) {
-            throw new BadRequestException("Время конца не должно быть равно времени начала");
+        if (bookingDto.getEnd() == null) {
+            throw new BadRequestException("Не указано время конца бронирования");
+        }
+        if (bookingDto.getStart() == null) {
+            throw new BadRequestException("Не указано время начала бронирования");
+        }
+        if (bookingDto.getStart().compareTo(bookingDto.getEnd()) == 0) {
+            throw new BadRequestException("Время начала и окончания бронирования совпадают");
+        }
+        if (bookingDto.getEnd().isBefore(bookingDto.getStart())) {
+            throw new BadRequestException("Время конца бронирования раньше времени начала");
         }
     }
 }

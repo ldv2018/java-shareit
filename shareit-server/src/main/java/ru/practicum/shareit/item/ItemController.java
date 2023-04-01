@@ -15,7 +15,6 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserService;
 
-import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +36,7 @@ public class ItemController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ItemDto add(@RequestHeader("X-Sharer-User-Id") int userId,
-                       @Valid @RequestBody ItemDto itemDto) {
+                       @RequestBody ItemDto itemDto) {
         Item item = ItemMapper.toItem(itemDto);
         item.setOwner(userId);
         Item returnItem = itemService.add(item, userId);
@@ -117,7 +116,7 @@ public class ItemController {
     @ResponseStatus(HttpStatus.OK)
     public ItemBookingDto.CommentDto addComment(@RequestHeader("X-Sharer-User-Id") int userId,
                                                 @PathVariable int itemId,
-                                                @RequestBody @Valid Comment comment) {
+                                                @RequestBody Comment comment) {
         Comment c = commentService.add(userId, itemId, comment);
 
         return ItemMapper.toCommentDto(c, userService.get(c.getAuthorId()));

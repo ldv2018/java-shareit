@@ -9,7 +9,6 @@ import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
-import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,7 +24,7 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDto add(@Valid @RequestBody UserDto userDto) {
+    public UserDto add(@RequestBody UserDto userDto) {
         User user = UserMapper.toUser(userDto);
         User returnUser = userService.add(user);
 

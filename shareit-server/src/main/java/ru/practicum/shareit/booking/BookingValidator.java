@@ -6,14 +6,12 @@ import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.validator.Validator;
 
-import javax.validation.Valid;
-
 @Validated
 @Component
 public class BookingValidator implements Validator<BookingRequestDto> {
 
     @Override
-    public void throwIfNotValid(@Valid BookingRequestDto bookingDto) {
+    public void throwIfNotValid(BookingRequestDto bookingDto) {
         if (bookingDto == null) {
             throw new BadRequestException("Пустой запрос");
         }

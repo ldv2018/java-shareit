@@ -11,7 +11,6 @@ import ru.practicum.shareit.request.dto.ItemRequestMessageDto;
 import ru.practicum.shareit.request.dto.ItemRequestResponseDto;
 import ru.practicum.shareit.request.model.ItemRequest;
 
-import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +31,7 @@ public class ItemRequestController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ItemRequestResponseDto add(@RequestHeader(user) int userId,
-                                      @Valid @RequestBody ItemRequestMessageDto itemRequestMessageDto) {
+                                      @RequestBody ItemRequestMessageDto itemRequestMessageDto) {
         log.info("Получен запрос на добавление itemRequest от пользователя " + userId);
         ItemRequest itemRequest = ItemRequestMapper.toItemRequest(itemRequestMessageDto);
         ItemRequest ir = itemRequestService.add(itemRequest, userId);
